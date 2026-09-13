@@ -69,12 +69,14 @@ Esport/tech (Wellplayed, G2, OP.GG-like), memes, actu LLM, pépites Reddit/Teleg
 
 ---
 
-## 3. Langue : la règle des 70/30
+## 3. Langue : la règle des 80/20
+
+**La langue suit le sujet, pas une doctrine.** Données réelles : tes réponses EN font +40 % de vues vs FR, et ton audience est plus anglophone que prévu (~35 EN vs ~18 FR dans les bios).
 
 | Type de contenu | Langue | Pourquoi |
 |---|---|---|
-| Build, sécurité, IA, workflow (le technique) | **EN 70 %** | Maximise la découverte OON + la reconnaissance internationale « the Frenchy » |
-| Takes, culture, communauté, vannes | **FR 30 %** | Construit la scène FR, l'attachement local |
+| Build, sécurité, IA, workflow, design (le technique) | **EN 80 %** | Maximise la découverte OON + la reconnaissance internationale « the Frenchy » |
+| Actu FR, scène FR, boîtes FR, takes/culture | **FR 20 %** | Construit la scène FR, l'attachement local |
 | Le reste | EN par défaut | Le FR doit être un choix, pas un réflexe |
 
 **Règles :**
