@@ -25,6 +25,7 @@ Bonne nouvelle : tu es **exactement le profil que le « cold-start boost » de X
 
 - Forké + cloné le code source de l'algo X : https://github.com/xammen/x-algorithm
 - Extrait 83 tweets/réponses + 40 éléments de ton onglet Posts (AnyAPI : `twitter.profile`, `twitter.user_tweets`, `twitter.user_posts`, `twitter.followers`)
+- Intégré ton export officiel **Under the Hood** (labels de juillet 2026)
 - Épluché le scoring (`home-mixer/params/param.rs`, `ranking_scorer.rs`), les filtres (`home-mixer/filters/*`), la récupération (`thunder/`, `phoenix/`, `simclusters`), la visibilité (`visibility-filtering/`) et le cold-start (`author_cold_start.rs`)
 - Calculé tes statistiques réelles et croisé avec les leviers du code
 
@@ -82,6 +83,19 @@ Artefacts :
 
 → Ta stratégie « reply guy » **capte des vues** mais **ne convertit presque pas** en followers (aucune de ces réponses ne dépasse ~1 follow visible, et ton total grimpe très lentement).
 
+### Under the Hood (rapport X de juillet 2026)
+
+Export officiel : période **01→31 juillet 2026**, **47 posts analysés**.
+
+| | Nombre |
+|---|---|
+| Labels de compte (spam, abuse, NSFW, `DoNotAmplify`…) | **0** |
+| Labels de post (`SPAM`, `NSFW_*`, `MALICIOUS_URL`, `FDO_NOT_AMPLIFY`…) | **0** |
+
+✅ **Conclusion majeure : ton compte est 100 % propre.** Aucun label ne limite ta visibilité. Ton manque de vues **n'est pas un problème d'enforcement / de spam-flag** — c'est uniquement un problème de **contenu, de format et d'amplification**. C'est une excellente nouvelle : ça se corrige.
+
+⚠️ Note : ce rapport est **mensuel** (généré le 08/08). Reprends-en un pour août/septembre après avoir appliqué le plan.
+
 ---
 
 ## 4. Comment marche l'algo (l'essentiel)
@@ -115,7 +129,7 @@ Négatifs : Report **-234** · Mute **-58,8** · Not interested **-43,2** · Blo
 |---|---|---|
 | 1 | **Base in-network minuscule** (Thunder = followers × 48 h) | 138 followers → plafond théorique ~138 vues/original |
 | 2 | **L'OON ne récupère que des originaux** (`oon_retweet_reply_filter`) | 77 % de ton activité = réponses → invisible hors-réseau |
-| 3 | **Trop peu de candidats frais** : seuls les posts < 48 h concourent | ~2-3 posts/semaine récents → souvent rien de frais à distribuer |
+| 3 | **Trop peu d'originaux frais** : seuls les posts < 48 h concourent, et le cold-start exige < 24 h | 47 posts en juillet mais seulement ~1 original tous les 3 jours → souvent rien de frais à propulser |
 | 4 | **Amplification ~0** : retweet ×1, quote ×5, copie-lien ×20 | 0,01 % de retweets → ton score reste au plancher |
 | 5 | **Pas d'historique d'engagement exploitable** pour la récupération OON (Phoenix/SimClusters partent de ton historique) | peu de likes/replies → tu n'es récupéré pour personne d'autre |
 | 6 | **Mélange FR/EN** (51/26) | embeddings flous → similarité utilisateurs/audience faible |
@@ -123,7 +137,7 @@ Négatifs : Report **-234** · Mute **-58,8** · Not interested **-43,2** · Blo
 | 8 | **Décote de diversité** : ×0,625 dès le 2e post, ×0,4375 au 3e | flooder ne sert à rien, il faut étaler |
 | 9 | **Cold-start non exploité** : tu es éligible mais il faut poster frais, original, régulièrement | tu publies trop peu pour en profiter |
 | 10 | **Décote OON ×0,75** tant qu'on ne te suit pas | convertir un viewer en follow = **+33 % de score** |
-| 11 | **Labels de visibilité possibles** (spam/NSFW → invisibles aux non-followers) | à vérifier dans « Under the Hood » |
+| 11 | ~~Labels de visibilité~~ | ✅ **Vérifié : 0 label** (Under the Hood, juillet 2026) → ton problème n'est **pas** l'enforcement |
 
 **Le cercle vicieux :** peu de followers → peu d'in-network → peu d'engagement → pas d'historique → pas de découverte OON → peu de nouveaux followers. **Le moyen de casser la boucle = les originaux frais + le cold-start + les follows mutuels + le contenu « partageable ».**
 
@@ -134,7 +148,7 @@ Négatifs : Report **-234** · Mute **-58,8** · Not interested **-43,2** · Blo
 ## 6. Plan d'action
 
 ### Phase 0 — Audit (aujourd'hui, 30 min)
-- [ ] Va sur **https://x.com/i/under_the_hood** et vérifie les **labels** sur ton compte/posts. Si tu vois `SpamHighRecall`, `DoNotAmplify`, `NSFW*`, fais le ménage (supprime les posts à risque, évite les liens suspects).
+- [x] ✅ **Labels vérifiés** (Under the Hood, juillet 2026) : **0 label compte, 0 label post**. Rien à nettoyer côté enforcement.
 - [ ] Vérifie qu'aucun de tes posts récents ne contient de lien raccourci douteux (`t.co` vers des proxys, etc.).
 - [ ] Supprime les 19 reposts récents de l'onglet : ils ne t'apportent **aucune** portée OON (reposts jetés) et diluent ton profil.
 
@@ -218,7 +232,7 @@ Objectif : **2-3 originaux/jour, espacés de 2-4 h** (la décote de diversité p
 
 - Les **poids entraînés de production** de Phoenix ne sont pas publiés : ce rapport s'appuie sur les paramètres par défaut du code, que X documente comme reflétant la production, plus des expériences sur une partie du trafic.
 - Le détail de certaines règles anti-spam (botmaker) et les seuils d'enforcement sont volontairement absents.
-- Le corpus est limité par l'API (~83 tweets récents) : ce sont tes données récentes, pas l'historique complet des 536 tweets.
+- Le corpus est limité par l'API (~83 tweets récents) : ce sont tes données récentes, pas l'historique complet des 536 tweets. Le rapport Under the Hood confirme que tu as publié **47 posts en juillet**, donc l'échantillon API sous-estime ton volume réel (mais il surestime la part d'originaux).
 - `twitter.following` a échoué côté fournisseur (bug API, non bloquant) : l'analyse des mutuals repose sur l'échantillon de followers.
 
 ---
